@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Dark Theme Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0F172A;
+    color: #E2E8F0;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #1E293B;
+    border-right: 1px solid #334155;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex-shrink: 0;
+  }
+  .sidebar-logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: #F8FAFC;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar-logo span { font-size: 22px; }
+  .sidebar-divider { height: 1px; background: #334155; }
+  .sidebar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .upload-box {
+    border: 1.5px dashed #334155;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    color: #64748B;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .upload-box:hover { border-color: #F59E0B; color: #94A3B8; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+  }
+  .btn-primary { background: #F59E0B; color: #0F172A; }
+  .btn-secondary { background: #1E293B; color: #94A3B8; border: 1px solid #334155; }
+  .slider-section { display: flex; flex-direction: column; gap: 12px; }
+  .slider-row { display: flex; flex-direction: column; gap: 6px; }
+  .slider-label { font-size: 12px; color: #94A3B8; display: flex; justify-content: space-between; }
+  .slider-label b { color: #F59E0B; }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: #334155;
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #F59E0B;
+    cursor: pointer;
+  }
+  .sidebar-caption { font-size: 11px; color: #475569; margin-top: auto; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px 36px; overflow-x: hidden; }
+  .page-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid #1E293B;
+    margin-bottom: 28px;
+  }
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    white-space: nowrap;
+  }
+  .tab.active { color: #F59E0B; border-bottom-color: #F59E0B; }
+  .tab:hover:not(.active) { color: #94A3B8; }
+
+  /* Metric cards */
+  .cards-row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .cards-row-4 { grid-template-columns: repeat(4, 1fr); }
+  .card {
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: #F59E0B;
+    opacity: 0.6;
+  }
+  .card-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .card-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #F8FAFC;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .card-delta { font-size: 12px; font-weight: 500; }
+  .card-delta.pos { color: #10B981; }
+  .card-delta.neg { color: #EF4444; }
+  .card-delta.neutral { color: #64748B; }
+
+  /* Chart area */
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .chart-card {
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .chart-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  /* Pie placeholder */
+  .pie-wrap { display: flex; justify-content: center; align-items: center; height: 160px; }
+  .pie { width: 130px; height: 130px; border-radius: 50%; background: conic-gradient(
+    #3B82F6 0% 32%,
+    #F59E0B 32% 52%,
+    #10B981 52% 68%,
+    #8B5CF6 68% 80%,
+    #EF4444 80% 100%
+  ); position: relative; }
+  .pie::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px; height: 56px;
+    background: #1E293B;
+    border-radius: 50%;
+  }
+
+  /* Bar chart placeholder */
+  .bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 130px; padding: 0 4px; }
+  .bar { flex: 1; border-radius: 4px 4px 0 0; position: relative; }
+  .bar.pos { background: linear-gradient(180deg, #10B981, #059669); }
+  .bar.neg { background: linear-gradient(180deg, #EF4444, #DC2626); border-radius: 0 0 4px 4px; }
+  .bar-label { font-size: 9px; color: #64748B; text-align: center; margin-top: 4px; }
+
+  /* Sector bars */
+  .sector-list { display: flex; flex-direction: column; gap: 8px; }
+  .sector-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94A3B8; }
+  .sector-name { width: 110px; flex-shrink: 0; }
+  .sector-bar-bg { flex: 1; height: 6px; background: #334155; border-radius: 3px; overflow: hidden; }
+  .sector-bar-fill { height: 100%; border-radius: 3px; }
+  .sector-pct { width: 34px; text-align: right; color: #64748B; font-size: 10px; }
+
+  .divider { height: 1px; background: #1E293B; margin: 20px 0; }
+
+  /* Expander */
+  .expander {
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #64748B;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .expander span { color: #F59E0B; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo"><span>📊</span> Portfolio Risk</div>
+  <div class="sidebar-divider"></div>
+
+  <div>
+    <div class="sidebar-label">Portfolio Input</div>
+    <div class="upload-box">CSV: Ticker, Shares, Avg_Cost</div>
+    <div class="btn-row" style="margin-top:10px">
+      <div class="btn btn-primary">▶ Load Sample</div>
+      <div class="btn btn-secondary">⬇ Download</div>
+    </div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="slider-section">
+    <div class="sidebar-label">Risk Settings</div>
+    <div class="slider-row">
+      <div class="slider-label">Risk-Free Rate (%) <b>5.00</b></div>
+      <input type="range" min="0" max="10" value="5">
+    </div>
+    <div class="slider-row">
+      <div class="slider-label">Monte Carlo Paths <b>1000</b></div>
+      <input type="range" min="500" max="5000" value="1000">
+    </div>
+  </div>
+
+  <div class="sidebar-caption">Data: Yahoo Finance · Cache: 5 min</div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="page-title">📊 Portfolio Risk Dashboard</div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active">📊 Overview</div>
+    <div class="tab">⚠️ Risk Analysis</div>
+    <div class="tab">📈 Benchmarks</div>
+    <div class="tab">🎯 Projections</div>
+    <div class="tab">📋 Holdings</div>
+  </div>
+
+  <!-- Row 1 cards -->
+  <div class="cards-row cards-row-4">
+    <div class="card">
+      <div class="card-label">Total Portfolio Value</div>
+      <div class="card-value">$28,540</div>
+      <div class="card-delta neutral">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Unrealized P&amp;L</div>
+      <div class="card-value">$3,210</div>
+      <div class="card-delta pos">▲ +12.67%</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Portfolio Beta</div>
+      <div class="card-value">1.28</div>
+      <div class="card-delta neutral">vs market</div>
+    </div>
+    <div class="card">
+      <div class="card-label">1-Day VaR (95%)</div>
+      <div class="card-value">$842</div>
+      <div class="card-delta neg">2.95% of portfolio</div>
+    </div>
+  </div>
+
+  <!-- Row 2 cards -->
+  <div class="cards-row cards-row-4">
+    <div class="card">
+      <div class="card-label">Sharpe Ratio</div>
+      <div class="card-value">1.42</div>
+      <div class="card-delta pos">Above 1.0 threshold</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Sortino Ratio</div>
+      <div class="card-value">1.89</div>
+      <div class="card-delta pos">Strong downside protection</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Max Drawdown</div>
+      <div class="card-value">−18.4%</div>
+      <div class="card-delta neg">Peak to trough</div>
+    </div>
+    <div class="card">
+      <div class="card-label">HHI Concentration</div>
+      <div class="card-value">0.214</div>
+      <div class="card-delta neutral">Moderate concentration</div>
+    </div>
+  </div>
+
+  <div class="expander"><span>ℹ️</span> What do these metrics mean?</div>
+
+  <div class="divider"></div>
+
+  <!-- Charts row -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Allocation</div>
+      <div class="pie-wrap"><div class="pie"></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+        <span style="font-size:10px;color:#94A3B8">● <span style="color:#3B82F6">NVDA 32%</span></span>
+        <span style="font-size:10px;color:#94A3B8">● <span style="color:#F59E0B">TSLA 20%</span></span>
+        <span style="font-size:10px;color:#94A3B8">● <span style="color:#10B981">JPM 16%</span></span>
+        <span style="font-size:10px;color:#94A3B8">● <span style="color:#8B5CF6">LLY 12%</span></span>
+        <span style="font-size:10px;color:#94A3B8">● <span style="color:#EF4444">GOOGL 20%</span></span>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">By Sector</div>
+      <div class="sector-list" style="margin-top:8px">
+        <div class="sector-row">
+          <div class="sector-name">Technology</div>
+          <div class="sector-bar-bg"><div class="sector-bar-fill" style="width:52%;background:#3B82F6"></div></div>
+          <div class="sector-pct">52%</div>
+        </div>
+        <div class="sector-row">
+          <div class="sector-name">Financials</div>
+          <div class="sector-bar-bg"><div class="sector-bar-fill" style="width:16%;background:#F59E0B"></div></div>
+          <div class="sector-pct">16%</div>
+        </div>
+        <div class="sector-row">
+          <div class="sector-name">Health Care</div>
+          <div class="sector-bar-bg"><div class="sector-bar-fill" style="width:12%;background:#10B981"></div></div>
+          <div class="sector-pct">12%</div>
+        </div>
+        <div class="sector-row">
+          <div class="sector-name">Cons. Discret.</div>
+          <div class="sector-bar-bg"><div class="sector-bar-fill" style="width:20%;background:#8B5CF6"></div></div>
+          <div class="sector-pct">20%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Unrealized P&amp;L</div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div class="bar-chart">
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+            <div class="bar pos" style="height:90px;width:100%"></div>
+            <div class="bar-label">NVDA</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+            <div class="bar pos" style="height:45px;width:100%"></div>
+            <div class="bar-label">JPM</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+            <div class="bar neg" style="height:30px;width:100%;margin-top:100px"></div>
+            <div class="bar-label">TSLA</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+            <div class="bar pos" style="height:60px;width:100%"></div>
+            <div class="bar-label">LLY</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+            <div class="bar neg" style="height:18px;width:100%;margin-top:112px"></div>
+            <div class="bar-label">GOOGL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
